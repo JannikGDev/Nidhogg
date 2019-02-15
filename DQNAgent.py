@@ -41,9 +41,12 @@ class DQNAgent:
     def _build_model(self):
         # Neural Net for Deep-Q learning Model
         model = Sequential()
-        model.add(Conv2D(8, kernel_size=(3, 3), input_shape=self.state_size))
+        model.add(Conv2D(8, kernel_size=(3, 3), padding='same', input_shape=self.state_size))
+        model.add(Conv2D(8, kernel_size=(3, 3), padding='same'))
         model.add(MaxPool2D())
-        model.add(Conv2D(16, kernel_size=(3, 3)))
+        model.add(Conv2D(16, kernel_size=(3, 3), padding='same'))
+        model.add(Conv2D(16, kernel_size=(3, 3), padding='same'))
+        model.add(MaxPool2D())
         model.add(Flatten())
         model.add(Dense(16, activation='relu'))
         model.add(Dense(8, activation='relu'))
@@ -114,6 +117,7 @@ class DQNAgent:
 
     def print_status(self):
 
+        print("")
         print("Epsilon: " + str(self.epsilon))
         print("Memory: " + str(len(self.memory)) + "/" + str(MEM_CAPACITY))
         print("Plays: " + str(self.plays))

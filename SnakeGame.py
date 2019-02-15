@@ -8,6 +8,8 @@ import time
 from pygame.locals import (QUIT, KEYDOWN, K_ESCAPE)
 from Constants import *
 from DQNAgent import DQNAgent
+from HumanAgent import HumanAgent
+
 
 class SnakeGame:
 
@@ -36,10 +38,7 @@ class SnakeGame:
             if player.alive:
                 all_died = False
 
-
-
         for i in range(self.player_count):
-
             self.players[i].step(self.board)
 
         for i in range(self.player_count):
@@ -47,7 +46,9 @@ class SnakeGame:
 
         self.board = self.board * 0
         self.ghost_board = self.ghost_board * 0
-        self.board[self.food[0], self.food[1]] = FOOD
+
+        for f in self.food:
+            self.board[f[0], f[1]] = FOOD
 
         for i in range(self.player_count):
             self.board, self.ghost_board = self.players[i].draw_snake(self.board, self.ghost_board)
@@ -91,10 +92,11 @@ class SnakeGame:
             self.board[self.food[f][0], self.food[f][1]] = FOOD
 
         self.plays += 1
-        if self.plays % 100 == 0:
+        if self.plays % 25 == 0:
             self.render = True
         else:
             self.render = False
+
 
     def check_alive(self, snake):
 
@@ -109,7 +111,9 @@ class SnakeGame:
             snake.alive = False
             return
 
-        for f in self.food:
+        for i in range(0, len(self.food)):
+            f = self.food[len(self.food) - i - 1]
+
             if snake.head_pos[0] == f[0] and snake.head_pos[1] == f[1]:
                 empty_space = np.where(self.board == 0)
                 food_spawn = random.randrange(0, len(empty_space[0]))
@@ -151,8 +155,8 @@ class SnakeGame:
 
                 self.screen.fill(COLORS[self.board[x][y]], rect=Rect(x*stepx, y*stepy, stepx, stepy))
 
-                if self.board[x][y] == EMPTY and self.ghost_board[x][y] != EMPTY:
-                    self.screen.fill(GHOST_COLORS[self.ghost_board[x][y]], rect=Rect(x * stepx, y * stepy, stepx, stepy))
+                # if self.board[x][y] == EMPTY and self.ghost_board[x][y] != EMPTY:
+                    # self.screen.fill(GHOST_COLORS[self.ghost_board[x][y]], rect=Rect(x * stepx, y * stepy, stepx, stepy))
 
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):

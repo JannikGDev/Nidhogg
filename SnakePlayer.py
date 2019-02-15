@@ -6,7 +6,7 @@ from HumanAgent import HumanAgent
 
 class SnakePlayer:
 
-    def __init__(self, agent, color, start_pos, start_dir=SOUTH, start_length=3):
+    def __init__(self, agent, color, start_pos, start_dir=SOUTH, start_length=4):
 
         self.life = 100
         self.color = color
@@ -15,6 +15,8 @@ class SnakePlayer:
         self.done = False
 
         self.agent = SnakeAgent(agent, color)
+        self.human = HumanAgent()
+
 
         self.head_pos = start_pos
         self.parts = []
