@@ -122,3 +122,21 @@ class DQNAgent:
         print("Memory: " + str(len(self.memory)) + "/" + str(MEM_CAPACITY))
         print("Plays: " + str(self.plays))
         print("Log: " + str(self.log))
+
+    def load_weights(self, filepath):
+        """
+        Loads the neural network weights from a file
+        :param filepath: The file containing the weights
+        :return: None
+        """
+        self.model.load_weights(filepath + ".h5")
+        print("Loaded weights from disk")
+
+    def save_weights(self, filepath):
+        """
+        Saves the neural network weights to a file
+        :param filepath: Where to save the file
+        :return: None
+        """
+        self.model.save_weights(filepath + ".h5")
+        print("Saved weights to disk")
