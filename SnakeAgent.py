@@ -14,7 +14,7 @@ class SnakeAgent:
         self.last_obs = None
         self.color = color
 
-    def step(self, board, reward, done):
+    def step(self, board, reward, done, explore=True):
 
         self.steps += 1
 
@@ -29,7 +29,7 @@ class SnakeAgent:
             self.last_obs = obs
 
         action = self.DQN.agent_step(last_obs=self.last_obs, last_action=self.last_action,
-                                     reward=reward, new_obs=obs, done=done)
+                                     reward=reward, new_obs=obs, done=done, explore=explore)
 
         self.last_action = action
         self.last_obs = obs

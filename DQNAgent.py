@@ -35,7 +35,9 @@ class DQNAgent:
 
         # Exploration Rate: How much the agent is randomly exploring vs trying to maximize reward
         self.epsilon = 1.0
-        self.epsilon_min = 0.01
+        self.epsilon_amplitude_min = 0.05
+        self.epsilon_decay = 0.995
+        self.epsilon_amplitude = 0.5
 
         self.epsilon_factor = 0
 
@@ -179,7 +181,9 @@ class DQNAgent:
 
         # Change Epsilon
         self.epsilon_factor += 0.1
-        self.epsilon = (math.sin(self.epsilon_factor) + 1) / 2
+        if self.epsilon_amplitude > self.epsilon_amplitude_min:
+            self.epsilon_amplitude *= self.epsilon_decay
+        self.epsilon = ((math.sin(self.epsilon_factor) + 1) / 2)*self.epsilon_amplitude
 
         if self.epsilon < 0.01:
             self.epsilon = 0

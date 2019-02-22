@@ -33,20 +33,20 @@ class SnakePlayer:
             else:
                 ValueError()
 
-    def step(self, board):
+    def step(self, board, explore=True):
 
         if self.alive is False and self.done is True:
             return
         elif self.alive is False:
             self.done = True
-            self.agent.step(board, -10, self.done)
+            self.agent.step(board, -10, self.done, explore=explore)
             return
 
         self.life -= 1
 
         self.reward += -0.01
 
-        self.direction = self.agent.step(board, self.reward, self.done)
+        self.direction = self.agent.step(board, self.reward, self.done, explore=explore)
 
         amount = len(self.parts)
         for n in range(amount):

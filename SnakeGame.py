@@ -26,6 +26,7 @@ class SnakeGame:
         self.max_reward = 0
 
         self.running = True
+        self.explore = True
         self.food = [(0, 0)]
         self.plays = 0
 
@@ -49,7 +50,7 @@ class SnakeGame:
                     self.min_survived = self.steps
 
         for i in range(self.player_count):
-            self.players[i].step(self.board)
+            self.players[i].step(self.board, explore=self.explore)
 
         for i in range(self.player_count):
             self.check_alive(self.players[i])
@@ -72,7 +73,8 @@ class SnakeGame:
 
         if all_died:
             self.agent.replay(100)
-            self.agent.log_stats(self.plays, self.min_survived, self.steps, self.max_reward)
+            if self.plays % 200 == 0:
+                self.agent.log_stats(self.plays, self.min_survived, self.steps, self.max_reward)
             self.setup()
 
         return self.running
@@ -114,8 +116,10 @@ class SnakeGame:
         self.plays += 1
         if self.plays % 200 == 0:
             self.render = True
+            self.explore = True
         else:
             self.render = False
+            self.explore = False
 
     def check_alive(self, snake):
 
