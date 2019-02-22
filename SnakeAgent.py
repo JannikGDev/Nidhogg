@@ -8,8 +8,7 @@ class SnakeAgent:
 
     def __init__(self, agent, color):
 
-        self.currentDir = NORTH
-        self.last_action = MOVE_STRAIGHT
+        self.last_action = NORTH
         self.steps = 0
         self.DQN = agent
         self.last_obs = None
@@ -32,23 +31,7 @@ class SnakeAgent:
         action = self.DQN.agent_step(last_obs=self.last_obs, last_action=self.last_action,
                                      reward=reward, new_obs=obs, done=done)
 
-        if done:
-            self.DQN.survived_steps(self.steps)
-
         self.last_action = action
         self.last_obs = obs
 
-        if action == MOVE_STRAIGHT:
-            self.currentDir = self.currentDir
-        if action == MOVE_LEFT:
-            self.currentDir = self.currentDir + 1
-        if action == MOVE_RIGHT:
-            self.currentDir = self.currentDir - 1
-
-        if self.currentDir > 3:
-            self.currentDir = 0
-
-        elif self.currentDir < 0:
-            self.currentDir = 3
-
-        return self.currentDir
+        return action

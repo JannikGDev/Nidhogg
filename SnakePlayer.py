@@ -13,11 +13,10 @@ class SnakePlayer:
         self.direction = start_dir
         self.alive = True
         self.done = False
+        self.reward = 0
 
         self.agent = SnakeAgent(agent, color)
         self.human = HumanAgent()
-
-
         self.head_pos = start_pos
         self.parts = []
 
@@ -40,14 +39,14 @@ class SnakePlayer:
             return
         elif self.alive is False:
             self.done = True
-            self.agent.step(board, -1000, self.done)
+            self.agent.step(board, -10, self.done)
             return
 
         self.life -= 1
 
-        reward = len(self.parts)*200 + self.life
+        self.reward += -0.01
 
-        self.direction = self.agent.step(board, reward, self.done)
+        self.direction = self.agent.step(board, self.reward, self.done)
 
         amount = len(self.parts)
         for n in range(amount):

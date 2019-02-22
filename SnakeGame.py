@@ -27,7 +27,7 @@ class SnakeGame:
         if self.render:
             self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA, 32)
 
-        self.agent = DQNAgent((MAP_SIZE, MAP_SIZE, 4), 3)
+        self.agent = DQNAgent((MAP_SIZE, MAP_SIZE, 4), 4)
 
         self.setup()
 
@@ -97,7 +97,6 @@ class SnakeGame:
         else:
             self.render = False
 
-
     def check_alive(self, snake):
 
         if snake.alive is False:
@@ -126,6 +125,7 @@ class SnakeGame:
                 self.food.append(new_food)
 
                 snake.life = 100
+                snake.reward += 1
 
                 snake.add_part()
 
