@@ -19,6 +19,11 @@ class SnakeGame:
         self.board = np.zeros((width, height)).astype(np.int)
         self.ghost_board = np.zeros((width, height)).astype(np.int)
         self.render = render
+        self.steps = 0
+
+        self.min_survived = 0
+        self.max_survived = 0
+        self.max_reward = 0
 
         self.running = True
         self.food = [(0, 0)]
@@ -33,10 +38,15 @@ class SnakeGame:
 
     def step(self):
 
+        self.steps += 1
+
         all_died = True
         for player in self.players:
             if player.alive:
                 all_died = False
+            else:
+                if self.min_survived == 0:
+                    self.min_survived = self.steps
 
         for i in range(self.player_count):
             self.players[i].step(self.board)
@@ -56,8 +66,13 @@ class SnakeGame:
         if self.render:
             self.render_game()
 
+        for player in self.players:
+            if player.reward > self.max_reward:
+                self.max_reward = player.reward
+
         if all_died:
             self.agent.replay(100)
+            self.agent.log_stats(self.plays, self.min_survived, self.steps, self.max_reward)
             self.setup()
 
         return self.running
@@ -66,6 +81,11 @@ class SnakeGame:
 
         self.board = self.board*0
         self.players.clear()
+
+        self.min_survived = 0
+        self.max_survived = 0
+        self.max_reward = 0
+        self.steps = 0
 
         radius = math.floor(self.board.shape[0]*0.3)
         center = (self.board.shape[0]//2, self.board.shape[1]//2)
@@ -92,7 +112,7 @@ class SnakeGame:
             self.board[self.food[f][0], self.food[f][1]] = FOOD
 
         self.plays += 1
-        if self.plays % 25 == 0:
+        if self.plays % 200 == 0:
             self.render = True
         else:
             self.render = False
@@ -104,6 +124,8 @@ class SnakeGame:
 
         if snake.head_pos[0] < 0 or snake.head_pos[0] >= MAP_SIZE or snake.head_pos[1] < 0 or snake.head_pos[1] >= MAP_SIZE:
             snake.alive = False
+            if self.min_survived == 0:
+                self.min_survived = self.steps
             return
 
         if snake.life <= 0:
@@ -163,9 +185,18 @@ class SnakeGame:
                 # The user closed the window or pressed escape
                 self.running = False
 
+
         time.sleep(0.1)
 
         pygame.display.flip()
+
+    def save_data(self):
+
+        self.agent.save_weights("data/nidhogg_weights")
+
+        with open("data/logdata.txt", "w") as file:
+            for data in self.agent.stats:
+                file.write(str(data) + "\n")
 
 
 if __name__ == '__main__':
@@ -177,3 +208,5 @@ if __name__ == '__main__':
     while running:
 
         running = game.step()
+
+    game.save_data()

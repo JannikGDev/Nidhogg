@@ -1,7 +1,7 @@
 import random
 import numpy as np
 from collections import deque
-
+import math
 import os
 
 # Set Backend according to your setup
@@ -25,18 +25,19 @@ class DQNAgent:
         """
         self.state_size = observation_shape
         self.action_size = num_of_actions
+        self.stats = []
 
         # Memory saves each step
-        self.memory = deque(maxlen=2000)
+        self.memory = deque(maxlen=10000)
 
         # Discount rate: How much the current state reward is depending on future rewards
         self.gamma = 0.95
 
         # Exploration Rate: How much the agent is randomly exploring vs trying to maximize reward
-        # Is decreasing over time according to epsilon_decay, but never below epsilon_min
         self.epsilon = 1.0
         self.epsilon_min = 0.01
-        self.epsilon_decay = 0.995
+
+        self.epsilon_factor = 0
 
         # Learning Rate for the Neural Network
         self.learning_rate = 0.001
@@ -61,8 +62,8 @@ class DQNAgent:
         model.add(Conv2D(16, kernel_size=(3, 3), padding='same'))
         model.add(MaxPool2D())
         model.add(Flatten())
+        model.add(Dense(32, activation='relu'))
         model.add(Dense(16, activation='relu'))
-        model.add(Dense(8, activation='relu'))
         model.add(Dense(self.action_size, activation='linear'))
         model.compile(loss='mse',
                       optimizer=Adam(lr=self.learning_rate))
@@ -176,6 +177,19 @@ class DQNAgent:
         # Train the agent
         self.model.fit(train_x, train_y, epochs=1, verbose=0)
 
-        # Epsilon decays/decreases each time the agent trains
-        if self.epsilon > self.epsilon_min:
-            self.epsilon *= self.epsilon_decay
+        # Change Epsilon
+        self.epsilon_factor += 0.1
+        self.epsilon = (math.sin(self.epsilon_factor) + 1) / 2
+
+        if self.epsilon < 0.01:
+            self.epsilon = 0
+
+    def log_stats(self, episode, min_survived, max_survived, max_reward):
+
+        data = (episode, min_survived, max_survived, max_reward, self.epsilon)
+
+        print(str(data))
+
+        self.stats.append(data)
+
+
